@@ -1,0 +1,18 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+
+development:
+  <<: *default
+  url: <%= ENV['DATABASE_URL'] %>
+
+test:
+  <<: *default
+  database: posifeed_mvp_test
+  url: <%= ENV['DATABASE_URL']&.gsub('posifeed_mvp_development', 'posifeed_mvp_test') %>
+
+production:
+  <<: *default
+  url: <%= ENV['DATABASE_URL'] %>
+  prepared_statements: false

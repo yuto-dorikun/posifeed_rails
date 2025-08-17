@@ -1,0 +1,29 @@
+FROM ruby:3.3.5
+
+# 必要なパッケージのインストール
+RUN apt-get update -qq && \
+    apt-get install --no-install-recommends -y \
+    build-essential \
+    postgresql-client \
+    nodejs \
+    npm \
+    git \
+    bash && \
+    rm -rf /var/lib/apt/lists /var/cache/apt/archives
+
+# アプリケーションディレクトリの作成
+WORKDIR /rails
+
+# Gemfileのコピーと依存関係のインストール
+COPY Gemfile Gemfile.lock ./
+RUN bundle config --global frozen 1
+RUN bundle install
+
+# アプリケーションコードのコピー
+COPY . .
+
+# ポートの公開
+EXPOSE 3000
+
+# 起動コマンド
+CMD ["rails", "server", "-b", "0.0.0.0"]

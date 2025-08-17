@@ -1,0 +1,39 @@
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: posifeed_rails_development
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d
+    ports:
+      - "5433:5432"
+    restart: always
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails server -b 0.0.0.0"
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@db:5432/posifeed_rails_development
+      - RAILS_ENV=development
+      - RAILS_MAX_THREADS=5
+    volumes:
+      - .:/rails
+      - bundle_cache:/usr/local/bundle
+      - node_modules:/rails/node_modules
+    ports:
+      - "3001:3000"
+    depends_on:
+      - db
+    stdin_open: true
+    tty: true
+    restart: always
+
+volumes:
+  postgres_data:
+  bundle_cache:
+  node_modules:
