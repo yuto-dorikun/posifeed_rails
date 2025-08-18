@@ -16,7 +16,6 @@ WORKDIR /rails
 
 # Gemfileのコピーと依存関係のインストール
 COPY Gemfile Gemfile.lock ./
-RUN bundle config --global frozen 1
 RUN bundle install
 
 # アプリケーションコードのコピー
